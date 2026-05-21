@@ -159,15 +159,15 @@ export default function Standings() {
         </div>
       )}
 
-      <AdminSliver />
+      <AdminSliver />	
 	
-      <footer>		
-        Printed for {division} on{" "}
+      <footer className="print-only">     
+       Printed for {division} on{" "}
         {new Date().toLocaleString("en-US", {
-          dateStyle: "medium",	
-          timeStyle: "short",
-        })}
-      </footer>	
+        dateStyle: "medium",
+        timeStyle: "short",
+         })}
+      </footer>
     </div>
   );
 }

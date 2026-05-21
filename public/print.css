@@ -38,9 +38,6 @@
   }
 }
 
-.admin-sliver {
-  display: none !important;
-}
 
 @media print {
   body {
@@ -110,22 +107,6 @@
 .standings-table td:nth-child(6) {
   width: 8% !important;
 }
-footer {
-  display: none;
-}
-
-@media print {
-  footer {
-    display: block !important;
-    position: fixed;
-    bottom: 10mm;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-size: 10pt;
-    color: #888;
-  }
-}
 
 @media print {
   .standings-table th {
@@ -189,5 +170,36 @@ footer {
     page-break-inside: avoid;
   }
 }
+@media print {
+  .admin-sliver {
+    display: none !important;
+  }
+}
+
+@media screen {
+  .print-only {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+}
+
+@media print {
+  .print-only {
+    display: block !important;
+    visibility: visible !important;
+    position: fixed;
+    bottom: 10mm;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10pt;
+    color: #888;
+  }
+}
+
+	
+
 
 		

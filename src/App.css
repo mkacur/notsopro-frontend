@@ -918,4 +918,7 @@
   border-radius: 8px;
   font-weight: 600;
 }
+.print-only {
+  display: none;
+}
 						

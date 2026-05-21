@@ -79,7 +79,7 @@ export default function AdminSliver({ className = "" }) {
   };
 
   return (
-    <div className={className} style={containerStyle}>
+    <div className={`admin-sliver ${className}`} style={containerStyle}>
       <span style={labelStyle} onClick={() => setShowPanel((prev) => !prev)}>
         Admin Mode: {adminMode ? "true" : "false"}
       </span>
