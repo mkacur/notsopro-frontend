@@ -1,0 +1,193 @@
+/* Hide UI elements when printing */
+@media print {
+  select,
+  button,
+  .nav-btn,
+  .admin-sliver {
+    display: none !important;
+  }
+
+  /* Make the standings table full width */
+  .standings-table {
+    width: 100% !important;
+    border-collapse: collapse;
+    font-size: 12pt;
+  }
+
+  .standings-table th,
+  .standings-table td {
+    padding: 6px 8px !important;
+    border: 1px solid #ccc !important;
+  }
+
+  /* Ensure backgrounds print correctly */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Center the title */
+  h1 {
+    text-align: center !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Remove page margins for cleaner output */
+  @page {
+    margin: 12mm;
+  }
+}
+
+.admin-sliver {
+  display: none !important;
+}
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .standings-table {
+    width: 95% !important;
+    margin: 0 auto !important;
+    font-size: 13pt;
+  }
+
+  h1, h2 {
+    text-align: center !important;
+  }
+
+  @page {
+    margin: 10mm;
+  }
+}
+
+@media print {
+  .standings-table {
+    width: 100% !important;
+    margin: 0 auto !important;
+    font-size: 13pt;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  .standings-table th,
+  .standings-table td {
+    padding: 6px 10px !important;
+    border: 1px solid #ccc !important;
+    word-wrap: break-word !important;
+  }
+
+  /* Widen the Team column */
+  .standings-table th:nth-child(2),
+  .standings-table td:nth-child(2) {
+    width: 40% !important;
+    white-space: nowrap !important;
+  }
+
+  /* Ensure numeric columns fit */
+  .standings-table th:nth-child(n+3),
+  .standings-table td:nth-child(n+3) {
+    width: 12% !important;
+  }
+
+  /* Prevent horizontal scrollbars */
+  html, body {
+    overflow: visible !important;
+  }
+}
+
+.standings-table th:nth-child(1),
+.standings-table td:nth-child(1),
+.standings-table th:nth-child(3),
+.standings-table td:nth-child(3),
+.standings-table th:nth-child(4),
+.standings-table td:nth-child(4),
+.standings-table th:nth-child(5),
+.standings-table td:nth-child(5),
+.standings-table th:nth-child(6),
+.standings-table td:nth-child(6) {
+  width: 8% !important;
+}
+footer {
+  display: none;
+}
+
+@media print {
+  footer {
+    display: block !important;
+    position: fixed;
+    bottom: 10mm;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10pt;
+    color: #888;
+  }
+}
+
+@media print {
+  .standings-table th {
+    background-color: #f0f0f0 !important;
+    font-weight: bold;
+  }
+}
+
+@media print {
+  /* Force table to expand fully and remove scrollbars */
+  .standings-table {
+    width: 100% !important;
+    margin: 0 auto !important;
+    font-size: 13pt;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  .standings-table th,
+  .standings-table td {
+    padding: 6px 10px !important;
+    border: 1px solid #ccc !important;
+    word-wrap: break-word !important;
+  }
+
+  /* Widen the Team column */
+  .standings-table th:nth-child(2),
+  .standings-table td:nth-child(2) {
+    width: 40% !important;
+    white-space: nowrap !important;
+  }
+
+  /* Ensure numeric columns fit */
+  .standings-table th:nth-child(n+3),
+  .standings-table td:nth-child(n+3) {
+    width: 12% !important;
+  }
+
+  /* Remove scrollbars and overflow */
+  .standings-table,
+  .standings-table-wrapper,
+  body,
+  html {
+    overflow: visible !important;
+  }
+
+  /* Optional: hide any horizontal scrollbars */
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+}
+@media print {
+  .standings-table th {
+    background-color: #f0f0f0 !important;
+    font-weight: bold !important;
+    border-bottom: 2px solid #999 !important;
+  }
+}
+@media print {
+  .standings-table {
+    page-break-inside: avoid;
+  }
+}
+
+		

@@ -3,11 +3,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdmin } from "../context/AdminContext";
 
-export default function AdminSliver() {
+export default function AdminSliver({ className = "" }) {
   const { adminMode, enterAdminMode, exitAdminMode, checkingPin, error } = useAdmin();
   const [showPanel, setShowPanel] = useState(false);
   const [pinInput, setPinInput] = useState("");
-  const navigate = useNavigate();
+  const navigate = useNavigate();	
 
   const handleEnterClick = async () => {
     const success = await enterAdminMode(pinInput);
@@ -72,14 +72,14 @@ export default function AdminSliver() {
     cursor: "pointer",
     whiteSpace: "nowrap",
     color: adminMode
-      ? "#4caf50" // ✅ green tint when active
+      ? "#4caf50" // green tint when active
       : showPanel
       ? "#666"    // neutral grey when waiting for PIN
-      : "#bbb",   // ✅ faint grey when inactive (almost hidden)
+      : "#bbb",   // faint grey when inactive
   };
 
   return (
-    <div style={containerStyle}>
+    <div className={className} style={containerStyle}>
       <span style={labelStyle} onClick={() => setShowPanel((prev) => !prev)}>
         Admin Mode: {adminMode ? "true" : "false"}
       </span>
@@ -124,3 +124,4 @@ export default function AdminSliver() {
     </div>
   );
 }
+	

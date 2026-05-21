@@ -8,6 +8,7 @@ export function AdminProvider({ children }) {
   const [checkingPin, setCheckingPin] = useState(false);
   const [error, setError] = useState("");
 
+
   const enterAdminMode = async (enteredPin) => {
     setError("");
     if (!enteredPin) {
@@ -57,6 +58,8 @@ export function AdminProvider({ children }) {
         exitAdminMode,
         checkingPin,
         error,
+
+        
       }}
     >
       {children}
@@ -67,3 +70,4 @@ export function AdminProvider({ children }) {
 export function useAdmin() {
   return useContext(AdminContext);
 }
+

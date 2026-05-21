@@ -1,10 +1,11 @@
+// src/pages/AdminPage.js
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdmin } from "../context/AdminContext";
 
 export default function AdminPage() {
   const navigate = useNavigate();
-  const { adminMode } = useAdmin();
+  const { adminMode } = useAdmin(); // Print All removed
 
   const [isResetting, setIsResetting] = useState(false);
   const [jobId, setJobId] = useState(null);
@@ -251,4 +252,3 @@ const overlayStyles = {
     textAlign: "center",
   },
 };
-

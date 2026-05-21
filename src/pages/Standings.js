@@ -1,8 +1,13 @@
+// src/pages/Standings.js
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import AdminSliver from "../components/AdminSliver";   // ⭐ ADD THIS
+import AdminSliver from "../components/AdminSliver";
+import StandingsTable from "../components/StandingsTable";
+import { useAdmin } from "../context/AdminContext";
+	
 
 export default function Standings() {
+  const { adminMode } = useAdmin();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -16,9 +21,9 @@ export default function Standings() {
   const [division, setDivision] = useState(initialDivision);
   const [team, setTeam] = useState(initialTeam);
 
-  const normalize = (s) =>
-    s?.replace(/['’]/g, "").replace(/\s+/g, " ").trim().toLowerCase();
-
+  // -----------------------------
+  // LOAD DATA
+  // -----------------------------
   useEffect(() => {
     fetch("https://notsopro-backend.onrender.com/api/divisions")
       .then((res) => res.json())
@@ -29,10 +34,16 @@ export default function Standings() {
       .then((data) => setTeams(data.value));
   }, []);
 
+  // -----------------------------
+  // DIVISION COLORS
+  // -----------------------------
   const divRecord = divisions.find((d) => d.fields.Division === division);
   const fillColor = divRecord?.fields.DivFillColor || "#ffffff";
   const fontColor = divRecord?.fields.DivFontColor || "#000000";
 
+  // -----------------------------
+  // FILTER + SORT TEAMS
+  // -----------------------------
   const filteredTeams = teams.filter(
     (t) => t.fields.Division === division
   );
@@ -46,13 +57,31 @@ export default function Standings() {
     return (B.Diff || 0) - (A.Diff || 0);
   });
 
+  // -----------------------------
+  // RENDER
+  // -----------------------------
   return (
     <div style={{ maxWidth: 420, margin: "0 auto", padding: 20, paddingBottom: 60 }}>
-      {/* ⭐ paddingBottom: 60 ensures the AdminSliver doesn't overlap content */}
+      
+      {/* Title + Print Button */}
+      <div style={styles.titleRow}>
+        <div>
+          <h1 style={styles.title}>Not So Pro Standings</h1>
+          {division && (
+            <h2 style={styles.divisionTitle}>Division: {division}</h2>
+          )}
+        </div>
 
-      <h1 style={{ textAlign: "center", marginBottom: 10 }}>
-        Not So Pro - Standings
-      </h1>
+        {division && (
+          <button
+            style={styles.printIcon}
+            onClick={() => window.print()}
+            title="Print standings"
+          >
+            🖨️
+          </button>
+        )}
+      </div>
 
       {/* Row 1: Division + Home */}
       <div style={styles.row}>
@@ -87,7 +116,16 @@ export default function Standings() {
       <div style={styles.row}>
         <select
           value={team}
-          onChange={(e) => setTeam(e.target.value)}
+          onChange={(e) => {
+           const newTeam = e.target.value;
+            setTeam(newTeam);
+
+            // Update the URL so highlighting works immediately
+             const params = new URLSearchParams(location.search);
+             params.set("division", division);
+             params.set("team", newTeam);
+          navigate(`/standings?${params.toString()}`, { replace: true });
+          }}
           style={styles.dropdown}
           disabled={!division}
         >
@@ -112,63 +150,24 @@ export default function Standings() {
 
       {/* Standings Table */}
       {division && (
-        <div style={styles.tableWrapper}>
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.th}>#</th>
-                <th style={{ ...styles.th, textAlign: "left", paddingLeft: 8 }}>Team</th>
-                <th style={styles.th}>W</th>
-                <th style={styles.th}>L</th>
-                <th style={styles.th}>For</th>
-                <th style={styles.th}>Ag</th>
-                <th style={styles.th}>Diff</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {sortedTeams.map((t, index) => {
-                const isSelected =
-                  normalize(t.fields.TeamName) === normalize(team);
-                const diff = t.fields.Diff || 0;
-                const diffColor = diff < 0 ? "#ff3b30" : "#000";
-
-                return (
-                  <tr
-                    key={t.id}
-                    style={{
-                      fontWeight: isSelected ? "bold" : "normal",
-                    }}
-                  >
-                    <td style={styles.td}>{index + 1}</td>
-
-                    <td
-                      style={{
-                        ...styles.td,
-                        background: fillColor,
-                        color: fontColor,
-                        textAlign: "left",
-                        paddingLeft: 8,
-                      }}
-                    >
-                      {t.fields.TeamName}
-                    </td>
-
-                    <td style={styles.td}>{t.fields.Wins}</td>
-                    <td style={styles.td}>{t.fields.Losses}</td>
-                    <td style={styles.td}>{t.fields.For}</td>
-                    <td style={styles.td}>{t.fields.Ag}</td>
-                    <td style={{ ...styles.td, color: diffColor }}>{diff}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="standings-table" style={styles.tableWrapper}>
+          <StandingsTable
+            teams={sortedTeams}
+            fillColor={fillColor}
+            fontColor={fontColor}
+          />
         </div>
       )}
 
-      {/* ⭐ Add the Admin Sliver at the very bottom */}
       <AdminSliver />
+	
+      <footer>		
+        Printed for {division} on{" "}
+        {new Date().toLocaleString("en-US", {
+          dateStyle: "medium",	
+          timeStyle: "short",
+        })}
+      </footer>	
     </div>
   );
 }
@@ -183,28 +182,32 @@ const styles = {
   dropdown: {
     flex: 7,
     padding: 12,
-    fontSize: 16,
+    fontSize: 16,			
     borderRadius: 8,
     border: "1px solid #ccc",
   },
   tableWrapper: {
     overflowX: "auto",
   },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    fontSize: 14,
+  titleRow: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
   },
-  th: {
-    padding: "6px 4px",
-    background: "#fff",
-    fontWeight: 700,
-    textAlign: "center",
+  title: {
+    fontSize: 22,
+    margin: 0,
+    padding: 0,
   },
-  td: {
-    padding: "4px 4px",
-    textAlign: "center",
-    borderBottom: "1px solid #ddd",
+  printIcon: {
+    fontSize: 20,
+    padding: 6,
+    borderRadius: 6,
+    border: "1px solid #ccc",
+    background: "#f5f5f5",
+    cursor: "pointer",
   },
 };
-
+		
