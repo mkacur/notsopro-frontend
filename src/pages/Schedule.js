@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAdmin } from "../context/AdminContext";
 import AdminSliver from "../components/AdminSliver";
+import "./Schedule.css";
 
 export default function Schedule() {
   const { adminMode } = useAdmin();
@@ -66,27 +67,26 @@ export default function Schedule() {
   });
 
   return (
-    <div style={{ maxWidth: 420, margin: "0 auto", padding: 20, paddingBottom: 60 }}>
+    <div className="schedule__container">
       {/* Sticky Header */}
       <div
-        style={{
-          ...styles.stickyHeader,
-          boxShadow: scrolled ? "0 4px 10px rgba(0,0,0,0.25)" : "none",
-        }}
-      >
-        <h1 style={{ textAlign: "center", marginBottom: 10 }}>
-          Not So Pro - Schedule
-        </h1>
+         className={`schedule__header ${
+         scrolled ? "schedule__header--sticky" : ""
+        }`}
+       >
+
+        <h1 className="schedule__title">Not So Pro - Schedule</h1>
 
         {/* Row 1: Division + Home */}
-        <div style={styles.row}>
+        <div className="schedule__row">
           <select
             value={division}
             onChange={(e) => {
               setDivision(e.target.value);
               setTeam("");
             }}
-            style={styles.dropdown}
+            className="schedule__dropdown"
+            
           >
             <option value="">Select Division</option>
             {divisions.map((d) => (
@@ -97,8 +97,7 @@ export default function Schedule() {
           </select>
 
           <button
-            className="nav-btn"
-            style={{ flex: 3 }}
+            className="schedule__button nav-btn"
             onClick={() => navigate(`/?division=${division}&team=${team}`)}
           >
             Home
@@ -106,7 +105,7 @@ export default function Schedule() {
         </div>
 
         {/* Row 2: Team + Standings */}
-        <div style={styles.row}>
+        <div className="schedule__row">
           <select
             value={team}
             onChange={(e) => {
@@ -117,7 +116,7 @@ export default function Schedule() {
                 navigate(`/schedule?division=${division}&team=${selectedTeam}`);
               }
             }}
-            style={styles.dropdown}
+            className="schedule__dropdown"
             disabled={!division}
           >
             <option value="">Select Team</option>
@@ -131,8 +130,7 @@ export default function Schedule() {
           </select>
 
           <button
-            className="nav-btn"
-            style={{ flex: 3 }}
+            className="schedule__button nav-btn"
             onClick={() =>
               navigate(`/standings?division=${division}&team=${team}`)
             }
@@ -144,7 +142,7 @@ export default function Schedule() {
 
       {/* Games */}
       {division && (
-        <div>
+        <div className="schedule__games">
           {filteredGames.map((g) => {
             const isFinal = g.fields.Status === "Final";
             const hasScore =
@@ -154,29 +152,29 @@ export default function Schedule() {
               g.fields.ScoreB !== undefined;
 
             return (
-              <div key={g.id} style={styles.gameCard}>
+              <div key={g.id} className="schedule__game-card">
                 {/* ROW 1 — Metadata + Final */}
-                <div style={styles.row1}>
-                  <div style={styles.metaLeft}>
+                <div className="schedule__meta">
+                  <div className="schedule__meta-left">
                     {g.fields.GameDate} {g.fields.GameTimeTx} &nbsp; Match{" "}
                     {g.fields.Match} &nbsp; Court {g.fields.Court}
-                  </div>
+                  </div>	
 
-                  <div style={styles.metaRight}>
+                  <div className="schedule__meta-right">
                     {isFinal && (
-                      <div style={styles.finalWrapper}>
+                      <div className="schedule__final">
                         <span style={{ color: "#ff8c00", fontWeight: "bold" }}>
                           Final
                         </span>
 
                         {adminMode && (
                           <span
-                            style={styles.editIcon}
+                            className="schedule__edit-icon"
                             onClick={() =>
                               navigate(
-                               `/enter-score?gameId=${g.id}&division=${division}&team=${team}`
-                                )
-                                  }                      
+                                `/enter-score?gameId=${g.id}&division=${division}&team=${team}`
+                              )
+                            }
                           >
                             ✏️
                           </span>
@@ -187,33 +185,33 @@ export default function Schedule() {
                 </div>
 
                 {/* ROW 2 — Teams + Score/Pencil */}
-                <div style={styles.row2}>
-                  <div style={styles.teams}>
+                <div className="schedule__row--game">
+                  <div className="schedule__teams">
                     <span
-                      style={
-                        g.fields.TeamA === team ? styles.boldTeam : undefined
+                      className={
+                        g.fields.TeamA === team ? "schedule__team--bold" : ""
                       }
                     >
                       {g.fields.TeamA}
                     </span>{" "}
                     vs{" "}
                     <span
-                      style={
-                        g.fields.TeamB === team ? styles.boldTeam : undefined
+                      className={
+                        g.fields.TeamB === team ? "schedule__team--bold" : ""
                       }
                     >
                       {g.fields.TeamB}
                     </span>
                   </div>
 
-                  <div style={styles.rightSide}>
+                  <div className="schedule__right">
                     {hasScore ? (
-                      <span style={{ color: "#0078d4", fontWeight: "bold" }}>
+                      <span className="schedule__score">
                         {g.fields.ScoreA}–{g.fields.ScoreB}
                       </span>
                     ) : (
                       <span
-                        style={{ fontSize: 20, cursor: "pointer" }}
+                        className="schedule__edit-icon schedule__edit-icon--large"
                         onClick={() =>
                           navigate(
                             `/enter-score?gameId=${g.id}&division=${division}&team=${team}`
@@ -231,100 +229,8 @@ export default function Schedule() {
         </div>
       )}
 
-      {/* Admin Edit Panel */}
-      
-
       <AdminSliver />
     </div>
   );
 }
 
-const styles = {
-  stickyHeader: {
-    position: "sticky",
-    top: 0,
-    zIndex: 100,
-    background: "linear-gradient(white 100%, rgba(255,255,255,0))",
-    backgroundColor: "white",
-    paddingTop: 6,
-    paddingBottom: 6,
-    borderBottom: "1px solid #ddd",
-    animation: "stickySlide 0.25s ease-out",
-  },
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 6,
-  },
-  dropdown: {
-    flex: 7,
-    padding: 12,
-    fontSize: 16,
-    borderRadius: 8,
-    border: "1px solid #ccc",
-  },
-  gameCard: {
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 8,
-    border: "1px solid #ddd",
-    backgroundColor: "#f9f9f9",
-    boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-  },
-  row1: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: 4,
-  },
-  metaLeft: {
-    fontSize: 14,
-    color: "#000",
-  },
-  metaRight: {
-    fontSize: 14,
-  },
-
-  // ⭐ Admin Final + Pencil styles
-  finalWrapper: {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-  },
-  editIcon: {
-    cursor: "pointer",
-    fontSize: 14,
-    opacity: 0.6,
-  },
-
-  row2: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  teams: {
-    fontSize: 16,
-    color: "#000",
-  },
-  boldTeam: {
-    fontWeight: "bold",
-  },
-  rightSide: {
-    minWidth: 50,
-    textAlign: "right",
-  },
-};
-
-// Sticky header animation
-const stickyAnim = `
-  @keyframes stickySlide {
-    from { transform: translateY(-20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-`;
-
-if (typeof document !== "undefined") {
-  const styleTag = document.createElement("style");
-  styleTag.innerHTML = stickyAnim;
-  document.head.appendChild(styleTag);
-}

@@ -1,0 +1,231 @@
+/* ------------------------------ */
+/* SCHEDULE PAGE — BEM STRUCTURE  */
+/* ------------------------------ */
+
+.schedule__container { }
+
+.schedule__header { }
+.schedule__header--sticky { }
+
+.schedule__title { }
+
+.schedule__row { }
+
+.schedule__dropdown { }
+
+.schedule__button { }
+
+.schedule__games { }
+
+.schedule__game-card { }
+
+.schedule__meta { }
+.schedule__meta-left { }
+.schedule__meta-right { }
+
+.schedule__final { }
+.schedule__final--active { }
+
+.schedule__edit-icon { }
+
+.schedule__teams { }
+.schedule__team--bold { }
+
+.schedule__right { }
+
+@keyframes schedule-sticky-slide {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ------------------------------ */
+/* CONTAINER                      */
+/* ------------------------------ */
+
+.schedule__container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
+}
+
+/* ------------------------------ */
+/* STICKY HEADER                  */
+/* ------------------------------ */
+
+.schedule__header {
+  background: white;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #ddd;
+  animation: schedule-sticky-slide 0.25s ease-out;
+}
+
+.schedule__header--sticky {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+/* ------------------------------ */
+/* TITLE                          */
+/* ------------------------------ */
+
+.schedule__title {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 22px;
+  font-weight: bold;
+}
+/* ------------------------------ */
+/* ROWS                           */
+/* ------------------------------ */
+
+.schedule__row {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+/* ------------------------------ */
+/* DROPDOWNS                      */
+/* ------------------------------ */
+
+.schedule__dropdown {
+  flex: 7;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: white;
+}
+
+/* ------------------------------ */
+/* BUTTONS                        */
+/* ------------------------------ */
+
+.schedule__button {
+  flex: 3;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  background: #ddd;
+  color: #000;
+}
+
+/* ------------------------------ */
+/* GAME CARD                      */
+/* ------------------------------ */
+
+.schedule__game-card {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* ------------------------------ */
+/* METADATA ROW (Row 1)           */
+/* ------------------------------ */
+
+.schedule__meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.schedule__meta-left {
+  font-size: 14px;
+  color: #000;
+}
+
+.schedule__meta-right {
+  font-size: 14px;
+}
+
+/* ------------------------------ */
+/* FINAL BADGE + EDIT ICON        */
+/* ------------------------------ */
+
+.schedule__final {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.schedule__edit-icon {
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+/* ------------------------------ */
+/* TEAMS + SCORE ROW (Row 2)      */
+/* ------------------------------ */
+
+.schedule__row--game {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.schedule__teams {
+  font-size: 16px;
+  color: #000;
+}
+
+.schedule__team--bold {
+  font-weight: bold;
+}
+
+.schedule__right {
+  min-width: 50px;
+  text-align: right;
+}
+
+.schedule__score {
+  color: #0078d4;
+  font-weight: bold;
+}
+/* ------------------------------ */
+/* STICKY HEADER (FINAL MOVE)     */
+/* ------------------------------ */
+
+.schedule__header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(white 100%, rgba(255,255,255,0));
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #ddd;
+  animation: schedule-sticky-slide 0.25s ease-out;
+}
+
+.schedule__header--sticky {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+/* Sticky header animation */
+@keyframes schedule-sticky-slide {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.schedule__games {
+  margin-top: 12px;
+}
+.schedule__games {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.schedule__edit-icon--large {
+  font-size: 20px;
+  cursor: pointer;
+}
