@@ -132,8 +132,9 @@
 }
 
 .home__sponsor-logo {
+  width: 90px;
   height: auto;
-  border-radius: 12px;
+  object-fit: contain;
 }
 
 /* Individual sponsor sizes */

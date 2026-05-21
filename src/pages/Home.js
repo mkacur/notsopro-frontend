@@ -31,7 +31,7 @@ function Home() {
       className="home"
       style={{
         backgroundImage: "url('/backgrounddark.png')",
-        backgroundSize: "contain",
+        backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         minHeight: "100vh",
