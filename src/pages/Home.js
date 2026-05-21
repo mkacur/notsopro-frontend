@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../NSPLogo.png";
-import "../App.css";
+import "./Home.css";
 
 function Home() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Read division/team from URL
   const params = new URLSearchParams(location.search);
   const initialDivision = params.get("division") || "";
   const initialTeam = params.get("team") || "";
@@ -29,7 +28,7 @@ function Home() {
 
   return (
     <div
-      className="App"
+      className="home"
       style={{
         backgroundImage: "url('/backgrounddark.png')",
         backgroundSize: "contain",
@@ -38,29 +37,30 @@ function Home() {
         minHeight: "100vh",
       }}
     >
-      <div className="home-container">
-        <header className="App-header">
-          <h1 className="title-text">Not So Pro Tournament</h1>
+      <div className="home__container">
+        <header className="home__header">
+          <h1 className="home__title">Not So Pro Tournament</h1>
+
           <img
             src={logo}
             alt="Not So Pro Logo"
-            style={{ width: "200px", marginBottom: "10px" }}
+            className="home__logo"
           />
-          <h2 className="subtitle-text">Welcome to the new app</h2>
 
-          {/* 70/30 layout */}
-          <div className="dropdown-stack">
+          <h2 className="home__subtitle">Welcome to the new app</h2>
 
-            {/* Row 1: Division + Schedule */}
-            <div className="row">
+          {/* Controls */}
+          <div className="home__controls">
+
+            {/* Row 1 */}
+            <div className="home__controls-row">
               <select
                 value={division}
                 onChange={(e) => {
                   setDivision(e.target.value);
                   setTeam("");
                 }}
-                className="dropdown"
-                style={{ flex: 7 }}
+                className="home__dropdown"
               >
                 <option value="">Select Division</option>
                 {divisions.map((d) => (
@@ -71,8 +71,7 @@ function Home() {
               </select>
 
               <button
-                className="nav-btn"
-                style={{ flex: 3 }}
+                className="home__button"
                 onClick={() =>
                   navigate(`/schedule?division=${division}&team=${team}`)
                 }
@@ -81,21 +80,18 @@ function Home() {
               </button>
             </div>
 
-            {/* Row 2: Team + Standings */}
-            <div className="row">
+            {/* Row 2 */}
+            <div className="home__controls-row">
               <select
                 value={team}
                 onChange={(e) => {
                   const selectedTeam = e.target.value;
                   setTeam(selectedTeam);
-
-                  // Auto-jump to Schedule
                   if (selectedTeam) {
                     navigate(`/schedule?division=${division}&team=${selectedTeam}`);
                   }
                 }}
-                className="dropdown"
-                style={{ flex: 7 }}
+                className="home__dropdown"
                 disabled={!division}
               >
                 <option value="">Select Team</option>
@@ -109,8 +105,7 @@ function Home() {
               </select>
 
               <button
-                className="nav-btn"
-                style={{ flex: 3 }}
+                className="home__button"
                 onClick={() =>
                   navigate(`/standings?division=${division}&team=${team}`)
                 }
@@ -120,21 +115,23 @@ function Home() {
             </div>
           </div>
 
-          {/* QR + Sponsors */}
-          <div className="qr-section">
-            <p className="qr-caption">Share App</p>
-            <img src="/NotSoProQR.png" alt="QR Code" className="qr-image" />
+          {/* QR */}
+          <div className="home__qr">
+            <p className="home__qr-caption">Share App</p>
+            <img src="/NotSoProQR.png" alt="QR Code" className="home__qr-image" />
           </div>
 
-          <div className="dj-section">
-            <img src="/DJMike.png" alt="DJ Mike" className="dj-image" />
+          {/* DJ */}
+          <div className="home__dj">
+            <img src="/DJMike.png" alt="DJ Mike" className="home__dj-image" />
           </div>
 
-          <div className="sponsor-section">
-            <img src="/Sunbum.png" alt="Sunbum" className="sponsor-logo sunbum" />
-            <img src="/RedRain.png" alt="Red Rain" className="sponsor-logo redrain" />
-            <img src="/PitaPit.png" alt="Pita Pit" className="sponsor-logo pitapit" />
-            <img src="/TwistedTea.png" alt="Twisted Tea" className="sponsor-logo twistedtea" />
+          {/* Sponsors */}
+          <div className="home__sponsors">
+            <img src="/Sunbum.png" alt="Sunbum" className="home__sponsor-logo home__sponsor-logo--sunbum" />
+            <img src="/RedRain.png" alt="Red Rain" className="home__sponsor-logo home__sponsor-logo--redrain" />
+            <img src="/PitaPit.png" alt="Pita Pit" className="home__sponsor-logo home__sponsor-logo--pitapit" />
+            <img src="/TwistedTea.png" alt="Twisted Tea" className="home__sponsor-logo home__sponsor-logo--twistedtea" />
           </div>
         </header>
       </div>
@@ -143,4 +140,3 @@ function Home() {
 }
 
 export default Home;
-

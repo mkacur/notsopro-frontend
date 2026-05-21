@@ -1,0 +1,160 @@
+/* -------------------------------------- */
+/* HOME (SPLASH PAGE) — BEM ARCHITECTURE  */
+/* -------------------------------------- */
+
+/* Background image for the entire splash page */
+.home {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+/* Main centered container */
+.home__container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header wrapper */
+.home__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+}
+
+/* Title + subtitle */
+.home__title {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 0 6px rgba(0,0,0,0.6);
+  margin-bottom: 6px;
+}
+
+.home__subtitle {
+  font-size: 16px;
+  color: white;
+  text-shadow: 0 0 4px rgba(0,0,0,0.5);
+  margin-bottom: 20px;
+}
+
+/* Logo */
+.home__logo {
+  width: 200px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+/* -------------------------------------- */
+/* CONTROLS (Dropdowns + Buttons)         */
+/* -------------------------------------- */
+
+.home__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.home__controls-row {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.home__dropdown {
+  flex: 7;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.home__button {
+  flex: 3;
+  padding: 12px;
+  font-size: 16px;
+  background: #ddd;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* -------------------------------------- */
+/* QR CODE                                */
+/* -------------------------------------- */
+
+.home__qr {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.home__qr-caption {
+  color: white;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.home__qr-image {
+  width: 150px;
+  max-width: 45vw;
+  height: auto;
+}
+
+/* -------------------------------------- */
+/* DJ IMAGE                               */
+/* -------------------------------------- */
+
+.home__dj {
+  margin-bottom: 20px;
+}
+
+.home__dj-image {
+  width: 260px;
+  max-width: 70%;
+  height: auto;
+  border-radius: 20px;
+}
+
+/* -------------------------------------- */
+/* SPONSORS                               */
+/* -------------------------------------- */
+
+.home__sponsors {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.home__sponsor-logo {
+  height: auto;
+  border-radius: 12px;
+}
+
+/* Individual sponsor sizes */
+.home__sponsor-logo--sunbum { width: 90px; }
+.home__sponsor-logo--redrain { width: 70px; }
+.home__sponsor-logo--pitapit { width: 100px; }
+.home__sponsor-logo--twistedtea { width: 50px; }
+
+/* -------------------------------------- */
+/* MOBILE TUNING                          */
+/* -------------------------------------- */
+
+@media (max-width: 480px) {
+  .home__title { font-size: 24px; }
+  .home__subtitle { font-size: 14px; }
+
+  .home__qr-image { width: 130px; }
+  .home__dj-image { width: 220px; }
+
+  .home__sponsor-logo--sunbum { width: 80px; }
+  .home__sponsor-logo--redrain { width: 60px; }
+  .home__sponsor-logo--pitapit { width: 90px; }
+  .home__sponsor-logo--twistedtea { width: 45px; }
+}
