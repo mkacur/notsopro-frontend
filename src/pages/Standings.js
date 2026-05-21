@@ -7,7 +7,7 @@ import { useAdmin } from "../context/AdminContext";
 	
 
 export default function Standings() {
-  const { adminMode } = useAdmin();
+  useAdmin();
   const navigate = useNavigate();
   const location = useLocation();
 
