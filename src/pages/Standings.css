@@ -1,0 +1,118 @@
+/* ------------------------------ */
+/* PAGE CONTAINER                 */
+/* ------------------------------ */
+
+.standings__container {
+  width: 100%;
+  max-width: 700px;      /* wider for laptop */
+  margin: 0 auto;
+  padding: 20px;
+  padding-bottom: 60px;
+}
+
+/* Mobile tuning */
+@media (max-width: 480px) {
+  .standings__container {
+    max-width: 420px;
+    padding: 16px;
+  }
+}
+
+/* ------------------------------ */
+/* HEADER                         */
+/* ------------------------------ */
+
+.standings__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.standings__title {
+  font-size: 22px;
+  margin: 0;
+}
+
+.standings__division-title {
+  font-size: 18px;
+  margin: 0;
+}
+
+/* ------------------------------ */
+/* BUTTONS + DROPDOWNS            */
+/* ------------------------------ */
+
+.standings__row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.standings__dropdown {
+  flex: 7;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.standings__button {
+  flex: 3;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  cursor: pointer;
+}
+
+/* ------------------------------ */
+/* TABLE WRAPPER                  */
+/* ------------------------------ */
+
+.standings__table-wrapper {
+  overflow-x: auto;
+}
+
+/* ------------------------------ */
+/* PRINT FOOTER                   */
+/* ------------------------------ */
+
+.standings__print-footer {
+  display: none;
+}
+
+/* ------------------------------ */
+/* PRINT MODE                     */
+/* ------------------------------ */
+
+@media print {
+  /* Hide controls */
+  .standings__row,
+  .standings__button,
+  .standings__dropdown,
+  .standings__print-button {
+    display: none !important;
+  }
+
+  /* Center printed content */
+  .standings__container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Show footer */
+  .standings__print-footer {
+    display: block;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 12px;
+  }
+
+  /* Add spacing above title */
+  .standings__title {
+    margin-top: 20px;
+  }
+}

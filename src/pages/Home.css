@@ -4,6 +4,7 @@
 
 /* Background image for the entire splash page */
 .home {
+  align-items: center;
   text-align: center;
   font-family: Arial, sans-serif;
 }

@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import AdminSliver from "../components/AdminSliver";
 import StandingsTable from "../components/StandingsTable";
 import { useAdmin } from "../context/AdminContext";
-	
+import "./Standings.css";
 
 export default function Standings() {
   useAdmin();
@@ -21,9 +21,6 @@ export default function Standings() {
   const [division, setDivision] = useState(initialDivision);
   const [team, setTeam] = useState(initialTeam);
 
-  // -----------------------------
-  // LOAD DATA
-  // -----------------------------
   useEffect(() => {
     fetch("https://notsopro-backend.onrender.com/api/divisions")
       .then((res) => res.json())
@@ -34,16 +31,10 @@ export default function Standings() {
       .then((data) => setTeams(data.value));
   }, []);
 
-  // -----------------------------
-  // DIVISION COLORS
-  // -----------------------------
   const divRecord = divisions.find((d) => d.fields.Division === division);
   const fillColor = divRecord?.fields.DivFillColor || "#ffffff";
   const fontColor = divRecord?.fields.DivFontColor || "#000000";
 
-  // -----------------------------
-  // FILTER + SORT TEAMS
-  // -----------------------------
   const filteredTeams = teams.filter(
     (t) => t.fields.Division === division
   );
@@ -57,24 +48,23 @@ export default function Standings() {
     return (B.Diff || 0) - (A.Diff || 0);
   });
 
-  // -----------------------------
-  // RENDER
-  // -----------------------------
   return (
-    <div style={{ maxWidth: 420, margin: "0 auto", padding: 20, paddingBottom: 60 }}>
-      
+    <div className="standings__container">
+
       {/* Title + Print Button */}
-      <div style={styles.titleRow}>
+      <div className="standings__header">
         <div>
-          <h1 style={styles.title}>Not So Pro Standings</h1>
+          <h1 className="standings__title">Not So Pro Standings</h1>
           {division && (
-            <h2 style={styles.divisionTitle}>Division: {division}</h2>
+            <h2 className="standings__division-title">
+              Division: {division}
+            </h2>
           )}
         </div>
 
         {division && (
           <button
-            style={styles.printIcon}
+            className="standings__print-button"
             onClick={() => window.print()}
             title="Print standings"
           >
@@ -84,14 +74,14 @@ export default function Standings() {
       </div>
 
       {/* Row 1: Division + Home */}
-      <div style={styles.row}>
+      <div className="standings__row">
         <select
           value={division}
           onChange={(e) => {
             setDivision(e.target.value);
             setTeam("");
           }}
-          style={styles.dropdown}
+          className="standings__dropdown"
         >
           <option value="">Select Division</option>
           {divisions.map((d) => (
@@ -102,8 +92,7 @@ export default function Standings() {
         </select>
 
         <button
-          className="nav-btn"
-          style={{ flex: 3 }}
+          className="standings__button nav-btn"
           onClick={() =>
             navigate(`/?division=${division}&team=${team}`)
           }
@@ -113,20 +102,19 @@ export default function Standings() {
       </div>
 
       {/* Row 2: Team + Schedule */}
-      <div style={styles.row}>
+      <div className="standings__row">
         <select
           value={team}
           onChange={(e) => {
-           const newTeam = e.target.value;
+            const newTeam = e.target.value;
             setTeam(newTeam);
 
-            // Update the URL so highlighting works immediately
-             const params = new URLSearchParams(location.search);
-             params.set("division", division);
-             params.set("team", newTeam);
-          navigate(`/standings?${params.toString()}`, { replace: true });
+            const params = new URLSearchParams(location.search);
+            params.set("division", division);
+            params.set("team", newTeam);
+            navigate(`/standings?${params.toString()}`, { replace: true });
           }}
-          style={styles.dropdown}
+          className="standings__dropdown"
           disabled={!division}
         >
           <option value="">Select Team (optional)</option>
@@ -138,8 +126,7 @@ export default function Standings() {
         </select>
 
         <button
-          className="nav-btn"
-          style={{ flex: 3 }}
+          className="standings__button nav-btn"
           onClick={() =>
             navigate(`/schedule?division=${division}&team=${team}`)
           }
@@ -150,7 +137,7 @@ export default function Standings() {
 
       {/* Standings Table */}
       {division && (
-        <div className="standings-table" style={styles.tableWrapper}>
+        <div className="standings__table-wrapper">
           <StandingsTable
             teams={sortedTeams}
             fillColor={fillColor}
@@ -159,55 +146,15 @@ export default function Standings() {
         </div>
       )}
 
-      <AdminSliver />	
-	
-      <footer className="print-only">     
-       Printed for {division} on{" "}
+      <AdminSliver />
+
+      <footer className="standings__print-footer print-only">
+        Printed for {division} on{" "}
         {new Date().toLocaleString("en-US", {
-        dateStyle: "medium",
-        timeStyle: "short",
-         })}
+          dateStyle: "medium",
+          timeStyle: "short",
+        })}
       </footer>
     </div>
   );
 }
-
-const styles = {
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 6,
-  },
-  dropdown: {
-    flex: 7,
-    padding: 12,
-    fontSize: 16,			
-    borderRadius: 8,
-    border: "1px solid #ccc",
-  },
-  tableWrapper: {
-    overflowX: "auto",
-  },
-  titleRow: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  title: {
-    fontSize: 22,
-    margin: 0,
-    padding: 0,
-  },
-  printIcon: {
-    fontSize: 20,
-    padding: 6,
-    borderRadius: 6,
-    border: "1px solid #ccc",
-    background: "#f5f5f5",
-    cursor: "pointer",
-  },
-};
-		

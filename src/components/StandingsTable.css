@@ -1,0 +1,98 @@
+/* ------------------------------ */
+/* BASE TABLE                     */
+/* ------------------------------ */
+
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+/* ------------------------------ */
+/* HEADER + CELLS                 */
+/* ------------------------------ */
+
+.standings-table__header-cell,
+.standings-table__cell {
+  padding: 6px 10px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+/* Team column (screen view) */
+.standings-table__header-cell--team,
+.standings-table__cell--division {
+  text-align: left;
+  padding-left: 12px;
+  width: 260px;       /* wider on laptop */
+  max-width: 260px;
+}
+
+/* ------------------------------ */
+/* SELECTED ROW (SCREEN)          */
+/* ------------------------------ */
+
+.standings-table__row--selected {
+  background-color: rgba(0, 0, 0, 0.10); /* subtle grey highlight */
+}
+
+.standings-table__row--selected .standings-table__cell {
+  font-weight: 600;
+}
+
+/* ------------------------------ */
+/* DIFF COLUMN COLORS             */
+/* ------------------------------ */
+
+.standings-table__cell--diff {
+  color: inherit;
+}
+
+.standings-table__cell--diff.negative {
+  color: #c0392b; /* softer red for negative values */
+}
+
+/* ------------------------------ */
+/* PRINT MODE                     */
+/* ------------------------------ */
+
+@media print {
+  /* Remove all borders and force fixed layout */
+  table.standings-table,
+  table.standings-table * {
+    border: none !important;
+    border-collapse: collapse !important;
+    table-layout: fixed !important;
+  }
+
+  /* Team column width for print */
+  table.standings-table th:nth-child(2),
+  table.standings-table td:nth-child(2) {
+    width: 280px !important;
+    max-width: 280px !important;
+    text-align: left !important;
+    padding-left: 12px !important;
+  }
+
+  /* All other columns */
+  table.standings-table th,
+  table.standings-table td {
+    width: 60px !important;
+    text-align: center !important;
+    padding: 6px 8px !important;
+    border-bottom: 1px solid #ddd !important;
+  }
+
+  /* Selected row highlight for print */
+  .standings-table__row--selected {
+    background-color: #e8e8e8 !important;
+  }
+
+  /* Center table on printed page */
+  .standings__container {
+    max-width: 600px !important;
+    margin: 0 auto !important;
+  }
+}
+
+
