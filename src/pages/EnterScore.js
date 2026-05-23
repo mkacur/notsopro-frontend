@@ -202,7 +202,8 @@ export default function EnterScore() {
         <div style={styles.scoreRow}>
           <span style={styles.teamLabel}>{teamA}</span>
           <input
-            type="text"
+            autoComplete="off"
+	    type="text"
             inputMode="numeric"
             pattern="[0-9]*"
             value={scoreA}
@@ -214,6 +215,7 @@ export default function EnterScore() {
         <div style={styles.scoreRow}>
           <span style={styles.teamLabel}>{teamB}</span>
           <input
+            autoComplete="off"
             type="text"
             inputMode="numeric"
             pattern="[0-9]*"
@@ -225,12 +227,15 @@ export default function EnterScore() {
       </div>
 
       <input
-        type="password"
-        placeholder="Captain Code"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
+         type="password"
+         placeholder="Captain Code"
+         value={code}
+         onChange={(e) => setCode(e.target.value)}
+         autoComplete="off"
+         inputMode="numeric"
+         pattern="[0-9]*"
         style={styles.codeInput}
-      />
+       />
 
       {error && <div style={styles.errorBanner}>{error}</div>}
       {success && <div style={styles.successBanner}>Score submitted!</div>}
