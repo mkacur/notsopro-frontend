@@ -204,19 +204,19 @@ export default function EnterScore() {
           <input
             name="scoreA"
             autoComplete="off"
-	    type="text"
+            type="text"
             inputMode="numeric"
             pattern="[0-9]*"
             value={scoreA}
             onChange={(e) => setScoreA(e.target.value)}
-            style={styles.scoreInput}
-          />
+           style={styles.scoreInput}
+         />
         </div>
 
         <div style={styles.scoreRow}>
           <span style={styles.teamLabel}>{teamB}</span>
           <input
-            name="scoreB"	
+            name="scoreB"
             autoComplete="off"
             type="text"
             inputMode="numeric"
