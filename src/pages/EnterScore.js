@@ -202,6 +202,7 @@ export default function EnterScore() {
         <div style={styles.scoreRow}>
           <span style={styles.teamLabel}>{teamA}</span>
           <input
+            name="scoreA"
             autoComplete="off"
 	    type="text"
             inputMode="numeric"
@@ -215,6 +216,7 @@ export default function EnterScore() {
         <div style={styles.scoreRow}>
           <span style={styles.teamLabel}>{teamB}</span>
           <input
+            name="scoreB"	
             autoComplete="off"
             type="text"
             inputMode="numeric"
@@ -227,6 +229,7 @@ export default function EnterScore() {
       </div>
 
       <input
+         name="captainCode"
          type="password"
          placeholder="Captain Code"
          value={code}
@@ -234,7 +237,9 @@ export default function EnterScore() {
          autoComplete="off"
          inputMode="numeric"
          pattern="[0-9]*"
-        style={styles.codeInput}
+         autoCorrect="off"
+         spellCheck="false"
+         style={styles.codeInput}
        />
 
       {error && <div style={styles.errorBanner}>{error}</div>}
