@@ -21,6 +21,9 @@ export default function Standings() {
   const [division, setDivision] = useState(initialDivision);
   const [team, setTeam] = useState(initialTeam);
 
+  /* ------------------------------ */
+  /* FETCH DATA                     */
+  /* ------------------------------ */
   useEffect(() => {
     fetch("https://notsopro-backend.onrender.com/api/divisions")
       .then((res) => res.json())
@@ -31,6 +34,28 @@ export default function Standings() {
       .then((data) => setTeams(data.value));
   }, []);
 
+  /* ------------------------------ */
+  /* STICKY HEADER SHADOW ON SCROLL */
+  /* ------------------------------ */
+  useEffect(() => {
+    const handleScroll = () => {
+      const header = document.querySelector(".standings__header");
+      if (!header) return;
+
+      if (window.scrollY > 10) {
+        header.classList.add("standings__header--sticky");
+      } else {
+        header.classList.remove("standings__header--sticky");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  /* ------------------------------ */
+  /* SORTING + FILTERING            */
+  /* ------------------------------ */
   const divRecord = divisions.find((d) => d.fields.Division === division);
   const fillColor = divRecord?.fields.DivFillColor || "#ffffff";
   const fontColor = divRecord?.fields.DivFontColor || "#000000";
@@ -48,92 +73,99 @@ export default function Standings() {
     return (B.Diff || 0) - (A.Diff || 0);
   });
 
+  /* ------------------------------ */
+  /* RENDER                         */
+  /* ------------------------------ */
   return (
     <div className="standings__container">
 
-      {/* Title + Print Button */}
+      {/* ⭐ STICKY HEADER (title + dropdown rows) */}
       <div className="standings__header">
-        <div>
+
+        {/* Row 1: Title + Print Button */}
+        <div className="standings__header-top">
           <h1 className="standings__title">Not So Pro Standings</h1>
+
           {division && (
-            <h2 className="standings__division-title">
-              Division: {division}
-            </h2>
+            <button
+              className="standings__print-button"
+              onClick={() => window.print()}
+              title="Print standings"
+            >
+              🖨️
+            </button>
           )}
         </div>
 
-        {division && (
-          <button
-            className="standings__print-button"
-            onClick={() => window.print()}
-            title="Print standings"
+        {/* Row 2: Division + Home */}
+        <div className="standings__row">
+          <select
+            value={division}
+            onChange={(e) => {
+              setDivision(e.target.value);
+              setTeam("");
+            }}
+            className="standings__dropdown"
           >
-            🖨️
+            <option value="">Select Division</option>
+            {divisions.map((d) => (
+              <option key={d.id} value={d.fields.Division}>
+                {d.fields.Division}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="standings__button nav-btn"
+            onClick={() =>
+              navigate(`/?division=${division}&team=${team}`)
+            }
+          >
+            Home
           </button>
-        )}
+        </div>
+
+        {/* Row 3: Team + Schedule */}
+        <div className="standings__row">
+          <select
+            value={team}
+            onChange={(e) => {
+              const newTeam = e.target.value;
+              setTeam(newTeam);
+
+              const params = new URLSearchParams(location.search);
+              params.set("division", division);
+              params.set("team", newTeam);
+              navigate(`/standings?${params.toString()}`, { replace: true });
+            }}
+            className="standings__dropdown"
+            disabled={!division}
+          >
+            <option value="">Select Team (optional)</option>
+            {filteredTeams.map((t) => (
+              <option key={t.id} value={t.fields.TeamName}>
+                {t.fields.TeamName}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="standings__button nav-btn"
+            onClick={() =>
+              navigate(`/schedule?division=${division}&team=${team}`)
+            }
+          >
+            Schedule
+          </button>
+        </div>
       </div>
 
-      {/* Row 1: Division + Home */}
-      <div className="standings__row">
-        <select
-          value={division}
-          onChange={(e) => {
-            setDivision(e.target.value);
-            setTeam("");
-          }}
-          className="standings__dropdown"
-        >
-          <option value="">Select Division</option>
-          {divisions.map((d) => (
-            <option key={d.id} value={d.fields.Division}>
-              {d.fields.Division}
-            </option>
-          ))}
-        </select>
-
-        <button
-          className="standings__button nav-btn"
-          onClick={() =>
-            navigate(`/?division=${division}&team=${team}`)
-          }
-        >
-          Home
-        </button>
-      </div>
-
-      {/* Row 2: Team + Schedule */}
-      <div className="standings__row">
-        <select
-          value={team}
-          onChange={(e) => {
-            const newTeam = e.target.value;
-            setTeam(newTeam);
-
-            const params = new URLSearchParams(location.search);
-            params.set("division", division);
-            params.set("team", newTeam);
-            navigate(`/standings?${params.toString()}`, { replace: true });
-          }}
-          className="standings__dropdown"
-          disabled={!division}
-        >
-          <option value="">Select Team (optional)</option>
-          {filteredTeams.map((t) => (
-            <option key={t.id} value={t.fields.TeamName}>
-              {t.fields.TeamName}
-            </option>
-          ))}
-        </select>
-
-        <button
-          className="standings__button nav-btn"
-          onClick={() =>
-            navigate(`/schedule?division=${division}&team=${team}`)
-          }
-        >
-          Schedule
-        </button>
-      </div>
+      {/* ⭐ Division label (hidden on screen, visible in print) */}
+      {division && (
+        <h2 className="standings__division-title">
+          Division: {division}
+        </h2>
+      )}
 
       {/* Standings Table */}
       {division && (
@@ -158,3 +190,4 @@ export default function Standings() {
     </div>
   );
 }
+

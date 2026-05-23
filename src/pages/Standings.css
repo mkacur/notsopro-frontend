@@ -1,52 +1,81 @@
 /* ------------------------------ */
-/* PAGE CONTAINER                 */
+/* CONTAINER                      */
 /* ------------------------------ */
 
 .standings__container {
   width: 100%;
-  max-width: 700px;      /* wider for laptop */
+  max-width: 100%;
   margin: 0 auto;
-  padding: 20px;
+  padding: 10px;
   padding-bottom: 60px;
+  box-sizing: border-box;
 }
 
-/* Mobile tuning */
-@media (max-width: 480px) {
+@media (min-width: 768px) {
   .standings__container {
-    max-width: 420px;
-    padding: 16px;
+    max-width: 600px;   /* match Schedule */
+    margin: 0 auto;
   }
 }
 
 /* ------------------------------ */
-/* HEADER                         */
+/* STICKY HEADER (NO SHADOW YET)  */
 /* ------------------------------ */
 
 .standings__header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(white 100%, rgba(255,255,255,0));
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ddd;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  flex-direction: column;
+  gap: 6px; /* tighter like Schedule */
+  transition: box-shadow 0.25s ease-out;
 }
 
-.standings__title {
-  font-size: 22px;
-  margin: 0;
-}
-
-.standings__division-title {
-  font-size: 18px;
-  margin: 0;
+/* Shadow appears ONLY after scroll */
+.standings__header--sticky {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
 }
 
 /* ------------------------------ */
-/* BUTTONS + DROPDOWNS            */
+/* TITLE + PRINT BUTTON ROW       */
+/* ------------------------------ */
+
+.standings__header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.standings__title {
+  text-align: center;
+  margin: 0;
+  font-size: 22px;
+  font-weight: bold;
+  flex: 1;
+}
+
+.standings__print-button {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+/* ------------------------------ */
+/* ROWS (70/30 SPLIT)             */
 /* ------------------------------ */
 
 .standings__row {
   display: flex;
+  flex-direction: row;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 4px; /* tighter spacing like Schedule */
 }
 
 .standings__dropdown {
@@ -55,6 +84,7 @@
   font-size: 16px;
   border-radius: 8px;
   border: 1px solid #ccc;
+  background: white;
 }
 
 .standings__button {
@@ -62,9 +92,28 @@
   padding: 12px;
   font-size: 16px;
   border-radius: 8px;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
-  cursor: pointer;
+  border: none;
+  font-weight: 600;
+  background: #ddd;
+  color: #000;
+}
+
+/* ------------------------------ */
+/* DIVISION LABEL (PRINT ONLY)    */
+/* ------------------------------ */
+
+.standings__division-title {
+  display: none; /* hidden on screen */
+}
+
+@media print {
+  .standings__division-title {
+    display: block;
+    text-align: center;
+    font-size: 24px;
+    margin-top: 10px;
+    font-weight: 600;
+  }
 }
 
 /* ------------------------------ */
@@ -72,7 +121,10 @@
 /* ------------------------------ */
 
 .standings__table-wrapper {
+  width: 100%;
   overflow-x: auto;
+  box-sizing: border-box;
+  margin-top: 12px;
 }
 
 /* ------------------------------ */
@@ -88,7 +140,6 @@
 /* ------------------------------ */
 
 @media print {
-  /* Hide controls */
   .standings__row,
   .standings__button,
   .standings__dropdown,
@@ -96,14 +147,12 @@
     display: none !important;
   }
 
-  /* Center printed content */
   .standings__container {
     max-width: 600px;
     margin: 0 auto;
     padding: 0;
   }
 
-  /* Show footer */
   .standings__print-footer {
     display: block;
     margin-top: 10px;
@@ -111,8 +160,15 @@
     font-size: 12px;
   }
 
-  /* Add spacing above title */
   .standings__title {
     margin-top: 20px;
   }
+
+  .standings__header {
+    position: static;
+    box-shadow: none;
+    border-bottom: none;
+    background: white;
+  }
 }
+
