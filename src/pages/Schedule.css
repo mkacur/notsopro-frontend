@@ -121,9 +121,9 @@
 /* ------------------------------ */
 
 .schedule__game-card {
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 8px;
+  padding: 2px;
+  margin-bottom: 0px;
+  border-radius: 5px;
   border: 1px solid #ddd;
   background-color: #f9f9f9;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
