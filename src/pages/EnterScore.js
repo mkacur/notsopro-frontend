@@ -214,7 +214,7 @@ export default function EnterScore() {
           <span style={styles.teamLabel}>{teamA}</span>
           <input
             name="scoreA"
-            autoComplete="off"
+            autoComplete="one-time-code"
             type="text"
             inputMode="numeric"
             pattern="[0-9]*"

@@ -100,6 +100,7 @@ export default function AdminSliver({ className = "" }) {
               type="password"
               placeholder="PIN"
               value={pinInput}
+              autoComplete="one-time-code"
               onChange={(e) => setPinInput(e.target.value)}
               style={inputStyle}
             />
