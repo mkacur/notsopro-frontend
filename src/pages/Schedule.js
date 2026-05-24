@@ -15,7 +15,12 @@ export default function Schedule() {
 
   const [divisions, setDivisions] = useState([]);
   const [teams, setTeams] = useState([]);
+  const sortedTeams = [...teams].sort((a, b) =>
+  a.fields.TeamName.localeCompare(b.fields.TeamName)
+);
+
   const [games, setGames] = useState([]);
+  
 
   const [division, setDivision] = useState(initialDivision);
   const [team, setTeam] = useState(initialTeam);
@@ -120,13 +125,14 @@ export default function Schedule() {
             disabled={!division}
           >
             <option value="">Select Team</option>
-            {teams
+            {sortedTeams
               .filter((t) => t.fields.Division === division)
               .map((t) => (
-                <option key={t.id} value={t.fields.TeamName}>
-                  {t.fields.TeamName}
-                </option>
-              ))}
+              <option key={t.id} value={t.fields.TeamName}>
+              {t.fields.TeamName}
+              </option>
+            ))}
+
           </select>
 
           <button

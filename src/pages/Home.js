@@ -13,6 +13,10 @@ function Home() {
 
   const [divisions, setDivisions] = useState([]);
   const [teams, setTeams] = useState([]);
+  const sortedTeams = [...teams].sort((a, b) =>
+  a.fields.TeamName.localeCompare(b.fields.TeamName)
+);
+
   const [division, setDivision] = useState(initialDivision);
   const [team, setTeam] = useState(initialTeam);
 
@@ -95,15 +99,14 @@ function Home() {
                 disabled={!division}
               >
                 <option value="">Select Team</option>
-                {teams
-                  .filter((t) => t.fields.Division === division)
-                  .map((t) => (
+                {sortedTeams
+                   .filter((t) => t.fields.Division === division)
+                   .map((t) => (
                     <option key={t.id} value={t.fields.TeamName}>
-                      {t.fields.TeamName}
-                    </option>
-                  ))}
+                  {t.fields.TeamName}
+                  </option>
+                ))}
               </select>
-
               <button
                 className="home__button"
                 onClick={() =>

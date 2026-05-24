@@ -56,15 +56,19 @@ export default function Standings() {
   /* ------------------------------ */
   /* SORTING + FILTERING            */
   /* ------------------------------ */
-  const divRecord = divisions.find((d) => d.fields.Division === division);
-  const fillColor = divRecord?.fields.DivFillColor || "#ffffff";
-  const fontColor = divRecord?.fields.DivFontColor || "#000000";
 
+  // Alphabetical list for dropdowns
+  const alphaTeams = [...teams].sort((a, b) =>
+    a.fields.TeamName.localeCompare(b.fields.TeamName)
+  );
+
+  // Teams in selected division
   const filteredTeams = teams.filter(
     (t) => t.fields.Division === division
   );
 
-  const sortedTeams = filteredTeams.sort((a, b) => {
+  // Standings-sorted list for the table
+  const standingsTeams = [...filteredTeams].sort((a, b) => {
     const A = a.fields;
     const B = b.fields;
 
@@ -72,6 +76,11 @@ export default function Standings() {
     if (A.Losses !== B.Losses) return A.Losses - B.Losses;
     return (B.Diff || 0) - (A.Diff || 0);
   });
+
+  // Division colors
+  const divRecord = divisions.find((d) => d.fields.Division === division);
+  const fillColor = divRecord?.fields.DivFillColor || "#ffffff";
+  const fontColor = divRecord?.fields.DivFontColor || "#000000";
 
   /* ------------------------------ */
   /* RENDER                         */
@@ -142,11 +151,13 @@ export default function Standings() {
             disabled={!division}
           >
             <option value="">Select Team (optional)</option>
-            {filteredTeams.map((t) => (
-              <option key={t.id} value={t.fields.TeamName}>
-                {t.fields.TeamName}
-              </option>
-            ))}
+            {alphaTeams
+              .filter((t) => t.fields.Division === division)
+              .map((t) => (
+                <option key={t.id} value={t.fields.TeamName}>
+                  {t.fields.TeamName}
+                </option>
+              ))}
           </select>
 
           <button
@@ -171,7 +182,7 @@ export default function Standings() {
       {division && (
         <div className="standings__table-wrapper">
           <StandingsTable
-            teams={sortedTeams}
+            teams={standingsTeams}
             fillColor={fillColor}
             fontColor={fontColor}
           />
@@ -190,4 +201,3 @@ export default function Standings() {
     </div>
   );
 }
-

@@ -107,90 +107,119 @@ export default function EnterScore() {
     .map(normalizeCode);
 
   const handleSubmit = async () => {
-    setError("");
-    setSubmitting(true);
+  setError("");
+  setSubmitting(true);
 
-    const a = parseInt(scoreA, 10);
-    const b = parseInt(scoreB, 10);
+  const a = parseInt(scoreA, 10);
+  const b = parseInt(scoreB, 10);
 
-    if (Number.isNaN(a) || Number.isNaN(b)) {
-      setError("Please enter scores for both teams");
-      setSubmitting(false);
-      return;
-    }
+  if (Number.isNaN(a) || Number.isNaN(b)) {
+    setError("Please enter scores for both teams");
+    setSubmitting(false);
+    return;
+  }
 
-    if (a === b) {
-      setError("Error: wrong code or no ties allowed");
-      setSubmitting(false);
-      return;
-    }
+  if (a === b) {
+    setError("Error: wrong code or no ties allowed");
+    setSubmitting(false);
+    return;
+  }
 
-    if (!validCodes.includes(normalizeCode(code))) {
-      setError("Error: wrong code or no ties allowed");
-      setSubmitting(false);
-      return;
-    }
+  if (!validCodes.includes(normalizeCode(code))) {
+    setError("Error: wrong code or no ties allowed");
+    setSubmitting(false);
+    return;
+  }
 
-    const winner = a > b ? teamA : teamB;
-    const loser = a > b ? teamB : teamA;
+  const winner = a > b ? teamA : teamB;
+  const loser = a > b ? teamB : teamA;
 
-    try {
-      // Update GAME
+  // OLD GAME VALUES (for delta logic)
+  const oldA = game.fields.ScoreA ?? 0;
+  const oldB = game.fields.ScoreB ?? 0;
+  const oldWinner = game.fields.Winner || null;
+  const oldLoser = game.fields.Loser || null;
+  const wasFinal = game.fields.Status === "Final";
+
+  try {
+    // Update GAME
+    await fetch(
+      `https://notsopro-backend.onrender.com/api/games/${game.id}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ScoreA: a,
+          ScoreB: b,
+          Winner: winner,
+          Loser: loser,
+          Status: "Final",
+        }),
+      }
+    );
+
+    // DELTA-BASED TEAM UPDATE
+    const updateTeam = async (teamName, isTeamA) => {
+      const teamRec = teams.find(t => t.fields.TeamName === teamName);
+      if (!teamRec) return;
+
+      // OLD per-team stats from this game
+      const prevFor = isTeamA ? oldA : oldB;
+      const prevAg = isTeamA ? oldB : oldA;
+
+      // NEW per-team stats from this game
+      const newFor = isTeamA ? a : b;
+      const newAg = isTeamA ? b : a;
+
+      // Point deltas
+      const forDelta = newFor - prevFor;
+      const agDelta = newAg - prevAg;
+
+      // Win/loss deltas
+      let winDelta = 0;
+      let lossDelta = 0;
+
+      if (wasFinal) {
+        if (oldWinner === teamName) winDelta -= 1;
+        if (oldLoser === teamName) lossDelta -= 1;
+      }
+
+      if (winner === teamName) winDelta += 1;
+      if (loser === teamName) lossDelta += 1;
+
       await fetch(
-        `https://notsopro-backend.onrender.com/api/games/${game.id}`,
+        `https://notsopro-backend.onrender.com/api/teams/${teamRec.id}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            ScoreA: a,
-            ScoreB: b,
-            Winner: winner,
-            Loser: loser,
-            Status: "Final",
+            Wins: (teamRec.fields.Wins || 0) + winDelta,
+            Losses: (teamRec.fields.Losses || 0) + lossDelta,
+            For: (teamRec.fields.For || 0) + forDelta,
+            Ag: (teamRec.fields.Ag || 0) + agDelta,
+            Diff: (teamRec.fields.Diff || 0) + (forDelta - agDelta),
           }),
         }
       );
+    };
 
-      // Update TEAMS
-      const updateTeam = async (teamName, won, forPts, agPts) => {
-        const teamRec = teams.find(
-          (t) => t.fields.TeamName === teamName
-        );
-        if (!teamRec) return;
+    // Apply deltas to both teams
+    await updateTeam(teamA, true);   // teamA is the A side
+    await updateTeam(teamB, false);  // teamB is the B side
 
-        await fetch(
-          `https://notsopro-backend.onrender.com/api/teams/${teamRec.id}`,
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              Wins: (teamRec.fields.Wins || 0) + (won ? 1 : 0),
-              Losses: (teamRec.fields.Losses || 0) + (won ? 0 : 1),
-              For: (teamRec.fields.For || 0) + forPts,
-              Ag: (teamRec.fields.Ag || 0) + agPts,
-              Diff:
-                (teamRec.fields.For || 0) +
-                forPts -
-                ((teamRec.fields.Ag || 0) + agPts),
-            }),
-          }
-        );
-      };
+    setSuccess(true);
 
-      await updateTeam(teamA, a > b, a, b);
-      await updateTeam(teamB, b > a, b, a);
+    // Redirect back to SAME schedule view
+    setTimeout(() => {
+      navigate(`/schedule?division=${division}&team=${team}`);
+    }, 1500);
 
-      setSuccess(true);
+  } catch (err) {
+    setError("Submission failed. Try again.");
+    setSubmitting(false);
+  }
+};
 
-      // Redirect back to SAME schedule view
-      setTimeout(() => {
-        navigate(`/schedule?division=${division}&team=${team}`);
-      }, 1500);
-    } catch (err) {
-      setError("Submission failed. Try again.");
-      setSubmitting(false);
-    }
-  };
 
   return (
     <div style={styles.container}>
@@ -241,7 +270,7 @@ export default function EnterScore() {
 
       <input
         name="captainCode"
-
+        type="password"
         placeholder="Captain Code"
         value={code}
         onChange={handleCodeChange}

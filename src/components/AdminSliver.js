@@ -97,7 +97,7 @@ export default function AdminSliver({ className = "" }) {
         showPanel && (
           <>
             <input
-              
+              type="password"
               placeholder="PIN"
               value={pinInput}
               autoComplete="one-time-code"
