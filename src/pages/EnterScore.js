@@ -11,24 +11,40 @@ export default function EnterScore() {
   const stateDivision = location.state?.division || "";
   const stateTeam = location.state?.team || "";
 
-  // Fallback source: URL query params
+  // URL params
   const params = new URLSearchParams(location.search);
   const fallbackGameId = params.get("gameId");
+  const fallbackTeam = params.get("team");
+  const fallbackDivision = params.get("division");
 
+  // Game + teams
   const [game, setGame] = useState(stateGame);
   const [teams, setTeams] = useState(stateTeams);
-  const [division, setDivision] = useState(stateDivision);
-  const [team, setTeam] = useState(stateTeam); // no setter needed later
 
+  // Division + team (URL first, then router state)
+  const [division, setDivision] = useState(
+    fallbackDivision || stateDivision || ""
+  );	
+
+  const [team] = useState(fallbackTeam || stateTeam || "");
+
+  // Scores
   const [scoreA, setScoreA] = useState("");
   const [scoreB, setScoreB] = useState("");
+
+  // Captain Code
   const [code, setCode] = useState("");
 
+  const handleCodeChange = (e) => {
+    const raw = e.target.value.replace(/\D/g, "");
+    setCode(raw);
+  };
+
+  // Admin + UI state
   const [adminPin, setAdminPin] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-
   // Load Admin PIN
   useEffect(() => {
     fetch("https://notsopro-backend.onrender.com/api/admin")
@@ -62,12 +78,7 @@ export default function EnterScore() {
     }
   }, [fallbackGameId, game, teams.length]);
 
-  // Fix: preserve team when returning to schedule
-  useEffect(() => {
-    if (!team && game) {
-      setTeam(stateTeam || game.fields.TeamA);
-    }
-  }, [team, game, stateTeam]);
+
 
   // Fix: prevent flash of "No game selected"
   if (!game && !fallbackGameId) {
@@ -229,18 +240,18 @@ export default function EnterScore() {
       </div>
 
       <input
-         name="captainCode"
-         type="password"
-         placeholder="Captain Code"
-         value={code}
-         onChange={(e) => setCode(e.target.value)}
-         autoComplete="off"
-         inputMode="numeric"
-         pattern="[0-9]*"
-         autoCorrect="off"
-         spellCheck="false"
-         style={styles.codeInput}
-       />
+        name="captainCode"
+        type="password"
+        placeholder="Captain Code"
+        value={code}
+        onChange={handleCodeChange}
+        autoComplete="off"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        autoCorrect="off"
+        spellCheck="false"
+        style={styles.codeInput}
+      />
 
       {error && <div style={styles.errorBanner}>{error}</div>}
       {success && <div style={styles.successBanner}>Score submitted!</div>}
