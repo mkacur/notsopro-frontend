@@ -241,7 +241,7 @@ export default function EnterScore() {
 
       <input
         name="captainCode"
-        type="password"
+
         placeholder="Captain Code"
         value={code}
         onChange={handleCodeChange}
