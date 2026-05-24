@@ -157,8 +157,36 @@ export default function Schedule() {
               g.fields.ScoreA !== undefined &&
               g.fields.ScoreB !== undefined;
 
+           // Determine win/loss from the perspective of the selected team
+let result = null; // "win" | "loss" | null
+let resultLetter = ""; // "W" | "L" | ""
+
+if (isFinal && hasScore && team) {
+  const isTeamA = g.fields.TeamA === team;
+  const isTeamB = g.fields.TeamB === team;
+
+  if (isTeamA) {
+    if (g.fields.ScoreA > g.fields.ScoreB) {
+      result = "win";
+      resultLetter = "W";
+    } else {
+      result = "loss";
+      resultLetter = "L";
+    }
+  } else if (isTeamB) {
+    if (g.fields.ScoreB > g.fields.ScoreA) {
+      result = "win";
+      resultLetter = "W";
+    } else {
+      result = "loss";
+      resultLetter = "L";
+    }
+  }
+}
+           
+
             return (
-              <div key={g.id} className="schedule__game-card">
+              <div key={g.id} className={`schedule__game-card ${result || ""}`}>
                 {/* ROW 1 — Metadata + Final */}
                 <div className="schedule__meta">
                   <div className="schedule__meta-left">
@@ -166,7 +194,8 @@ export default function Schedule() {
                     {g.fields.Match} &nbsp; Court {g.fields.Court}
                   </div>	
 
-                  <div className="schedule__meta-right">
+         
+         <div className="schedule__meta-right">
                     {isFinal && (
                       <div className="schedule__final">
                         <span style={{ color: "#ff8c00", fontWeight: "bold" }}>
@@ -191,6 +220,7 @@ export default function Schedule() {
                 </div>
 
                 {/* ROW 2 — Teams + Score/Pencil */}
+                
                 <div className="schedule__row--game">
                   <div className="schedule__teams">
                     <span
@@ -211,11 +241,17 @@ export default function Schedule() {
                   </div>
 
                   <div className="schedule__right">
-                    {hasScore ? (
+                      {hasScore ? (
                       <span className="schedule__score">
-                        {g.fields.ScoreA}–{g.fields.ScoreB}
-                      </span>
-                    ) : (
+                      {result && (
+                      <span className={`schedule__wl schedule__wl--${result}`}>
+                      {resultLetter}
+                     </span>
+                    )}
+                  {g.fields.ScoreA}–{g.fields.ScoreB}
+                </span>
+                 ) : (
+
                       <span
                         className="schedule__edit-icon schedule__edit-icon--large"
                         onClick={() =>

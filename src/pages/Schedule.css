@@ -236,3 +236,36 @@
     margin: 0 auto;     /* centers the content */
   }
 }
+
+/* Win/Loss Tinting */
+.schedule__game-card.win {
+  background-color: rgba(0, 200, 0, 0.09); /* soft green */
+}
+
+.schedule__game-card.loss {
+  background-color: rgba(255, 0, 0, 0.07); /* soft red/pink */
+}
+
+/* W/L label */
+.schedule__result-letter {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+  color: #333;
+}
+/* Inline W/L badge */
+.schedule__wl {
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+/* Darker green for W */
+.schedule__wl--win {
+  color: #0a7d0a; /* deep green */
+}
+
+/* Red for L */
+.schedule__wl--loss {
+  color: #cc0000; /* strong red */
+}
+
