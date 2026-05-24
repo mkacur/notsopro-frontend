@@ -228,7 +228,7 @@ export default function EnterScore() {
           <span style={styles.teamLabel}>{teamB}</span>
           <input
             name="scoreB"
-            autoComplete="off"
+            autoComplete="one-time-code"
             type="text"
             inputMode="numeric"
             pattern="[0-9]*"
@@ -245,7 +245,7 @@ export default function EnterScore() {
         placeholder="Captain Code"
         value={code}
         onChange={handleCodeChange}
-        autoComplete="off"
+        autoComplete="one-time-code"
         inputMode="numeric"
         pattern="[0-9]*"
         autoCorrect="off"
