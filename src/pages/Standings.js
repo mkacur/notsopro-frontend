@@ -5,9 +5,8 @@ import AdminSliver from "../components/AdminSliver";
 import StandingsTable from "../components/StandingsTable";
 import { useAdmin } from "../context/AdminContext";
 import "./Standings.css";
-
+	
 export default function Standings() {
-  useAdmin();
   const navigate = useNavigate();
   const location = useLocation();
 
