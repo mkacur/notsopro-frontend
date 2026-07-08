@@ -189,7 +189,7 @@ export default function Standings() {
         </div>
       )}
 
-      <AdminSliver />
+      {/* <AdminSliver />  Removed from Standings page to avoid overlap */}
 
       <footer className="standings__print-footer print-only">
         Printed for {division} on{" "}
@@ -200,4 +200,3 @@ export default function Standings() {
       </footer>
     </div>
   );
-}
