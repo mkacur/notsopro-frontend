@@ -1,7 +1,7 @@
 // src/pages/Standings.js
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-{import AdminSliver from "../components/AdminSliver";}
+
 import StandingsTable from "../components/StandingsTable";
 import { useAdmin } from "../context/AdminContext";
 import "./Standings.css";
