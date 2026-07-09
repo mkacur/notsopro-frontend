@@ -124,6 +124,15 @@ function Home() {
             <img src="/NotSoProQR.png" alt="QR Code" className="home__qr-image" />
           </div>
 
+          <div className="home__install-help">
+            <p className="home__install-text">
+             Android users: If you want to save the app icon, long‑press this link and choose "Open in          Chrome":
+           </p>
+          <a href="https://notsopro-frontend.onrender.com" className="home__install-link">
+          https://notsopro-frontend.onrender.com
+         </a>
+        </div>
+
           {/* DJ */}
           <div className="home__dj">
             <img src="/DJMike.png" alt="DJ Mike" className="home__dj-image" />
