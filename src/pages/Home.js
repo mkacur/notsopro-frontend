@@ -126,7 +126,7 @@ function Home() {
 
           <div className="home__install-help">
             <p className="home__install-text">
-             Android users: If you want to save the app icon, long‑press this link and choose "Open in          Chrome":
+             If the app doesn’t save automatically, long‑press the link above → open in Chrome (Android) or Safari (iPhone) → then use your browser’s menu to Add to Home Screen.":
            </p>
           <a href="https://notsopro-frontend.onrender.com" className="home__install-link">
           https://notsopro-frontend.onrender.com
