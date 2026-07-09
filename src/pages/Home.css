@@ -160,3 +160,31 @@
   .home__sponsor-logo--pitapit { width: 90px; }
   .home__sponsor-logo--twistedtea { width: 45px; }
 }
+.home__install-help {
+  margin-top: 20px;
+  text-align: center;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.55); /* subtle dark overlay */
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.home__install-text {
+  color: #ffffff;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.home__install-link {
+  display: inline-block;
+  color: #00e1ff; /* bright cyan */
+  font-size: 18px;
+  font-weight: bold;
+  text-decoration: underline;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+}
