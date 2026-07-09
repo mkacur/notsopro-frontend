@@ -92,7 +92,7 @@ export default function Standings() {
 
         {/* Row 1: Title + Print Button */}
         <div className="standings__header-top">
-          <h1 className="standings__title">Not So Pro Standings</h1>
+          <h1 className="standings__title">STANDINGS TEST 123</h1>
 
           {division && (
             <button
