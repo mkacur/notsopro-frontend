@@ -1,11 +1,10 @@
-// src/pages/Standings.js
+/* src/pages/Standings.js */
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import StandingsTable from "../components/StandingsTable";
-import { useAdmin } from "../context/AdminContext";
 import "./Standings.css";
-	
+
 export default function Standings() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -92,7 +91,7 @@ export default function Standings() {
 
         {/* Row 1: Title + Print Button */}
         <div className="standings__header-top">
-          <h1 className="standings__title">Not So Pro Standings</h1>
+          <h1 className="standings__title">STANDINGS TEST 123</h1>
 
           {division && (
             <button
@@ -188,8 +187,6 @@ export default function Standings() {
         </div>
       )}
 
-      {/* <AdminSliver />  Removed from Standings page to avoid overlap */}
-
       <footer className="standings__print-footer print-only">
         Printed for {division} on{" "}
         {new Date().toLocaleString("en-US", {
@@ -199,3 +196,5 @@ export default function Standings() {
       </footer>
     </div>
   );
+}
+
