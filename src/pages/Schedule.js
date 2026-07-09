@@ -271,7 +271,7 @@ if (isFinal && hasScore && team) {
         </div>
       )}
 
-      {/* <AdminSliver />  Removed from Standings page to avoid overlap */}
+      <AdminSliver />
     </div>
   );
 }
