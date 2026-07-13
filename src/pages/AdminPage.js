@@ -5,20 +5,41 @@ import { useAdmin } from "../context/AdminContext";
 
 export default function AdminPage() {
   const navigate = useNavigate();
-  const { adminMode } = useAdmin(); // Print All removed
+  const { adminMode } = useAdmin();
 
+  // Reset Tournament Data states
   const [isResetting, setIsResetting] = useState(false);
   const [jobId, setJobId] = useState(null);
   const [status, setStatus] = useState(null);
   const [teamsProgress, setTeamsProgress] = useState({ done: 0, total: 0 });
   const [gamesProgress, setGamesProgress] = useState({ done: 0, total: 0 });
 
+  // Recalculate Standings states
+  const [isRecalculating, setIsRecalculating] = useState(false);
+  const [recalcStatus, setRecalcStatus] = useState("");
+  const [divisionList, setDivisionList] = useState([]);
+  const [selectedDivision, setSelectedDivision] = useState("");
+
   // Redirect if admin mode is off
   useEffect(() => {
-    if (!adminMode) {
-      navigate("/");
-    }
+    if (!adminMode) navigate("/");
   }, [adminMode, navigate]);
+
+  // Load divisions for dropdown
+  useEffect(() => {
+    async function loadDivisions() {
+      try {
+        const res = await fetch("https://notsopro-backend.onrender.com/api/teams");
+        const data = await res.json();
+
+        const divisions = [...new Set(data.value.map(t => t.fields.Division))];
+        setDivisionList(divisions);
+      } catch (err) {
+        console.error("Failed to load divisions:", err);
+      }
+    }
+    loadDivisions();
+  }, []);
 
   // Poll reset status
   useEffect(() => {
@@ -72,9 +93,7 @@ export default function AdminPage() {
 
   // Start reset
   const handleResetTournament = async () => {
-    const sure = window.confirm(
-      "Reset ALL tournament data? This cannot be undone."
-    );
+    const sure = window.confirm("Reset ALL tournament data? This cannot be undone.");
     if (!sure) return;
 
     const password = window.prompt("Enter admin password to confirm reset:");
@@ -115,6 +134,113 @@ export default function AdminPage() {
     }
   };
 
+  // Recalculate Standings
+  const handleRecalculateStandings = async () => {
+    if (!selectedDivision) {
+      alert("Please select a division first.");
+      return;
+    }
+
+    const sure = window.confirm(
+      `Recalculate standings for ${selectedDivision}?`
+    );
+    if (!sure) return;
+
+    try {
+      setIsRecalculating(true);
+      setRecalcStatus("Loading teams...");
+
+      // 1. Load teams
+      const teamsRes = await fetch(
+        "https://notsopro-backend.onrender.com/api/teams"
+      );
+      const teamsData = await teamsRes.json();
+      const teams = teamsData.value.filter(
+        t => t.fields.Division === selectedDivision
+      );
+
+      const standings = {};
+      teams.forEach(t => {
+        standings[t.fields.TeamName] = {
+          Wins: 0,
+          Losses: 0,
+          For: 0,
+          Ag: 0,
+          Diff: 0,
+          id: t.id
+        };
+      });
+
+      setRecalcStatus("Loading completed games...");
+
+      // 2. Load games
+      const gamesRes = await fetch(
+        "https://notsopro-backend.onrender.com/api/games"
+      );
+      const gamesData = await gamesRes.json();
+      const completed = gamesData.value.filter(
+        g =>
+          g.fields.Division === selectedDivision &&
+          g.fields.Status === "Final"
+      );
+
+      setRecalcStatus("Recalculating standings...");
+
+      // 3. Loop through games
+      completed.forEach(g => {
+        const A = g.fields.TeamA;
+        const B = g.fields.TeamB;
+        const a = g.fields.ScoreA;
+        const b = g.fields.ScoreB;
+
+        standings[A].For += a;
+        standings[A].Ag += b;
+        if (a > b) standings[A].Wins++;
+        else standings[A].Losses++;
+
+        standings[B].For += b;
+        standings[B].Ag += a;
+        if (b > a) standings[B].Wins++;
+        else standings[B].Losses++;
+      });
+
+      // 4. Compute Diff
+      Object.values(standings).forEach(s => {
+        s.Diff = s.For - s.Ag;
+      });
+
+      setRecalcStatus("Writing updated standings...");
+
+      // 5. Write back
+      for (const teamName in standings) {
+        const s = standings[teamName];
+
+        await fetch(
+          `https://notsopro-backend.onrender.com/api/teams/${s.id}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              Wins: s.Wins,
+              Losses: s.Losses,
+              For: s.For,
+              Ag: s.Ag,
+              Diff: s.Diff
+            })
+          }
+        );
+      }
+
+      setRecalcStatus("Standings recalculated successfully!");
+      setTimeout(() => setIsRecalculating(false), 2000);
+
+    } catch (err) {
+      console.error(err);
+      setRecalcStatus("Error recalculating standings.");
+      setTimeout(() => setIsRecalculating(false), 2000);
+    }
+  };
+
   const handleEmailCaptains = () => {
     alert("Email Captains' Codes feature coming soon.");
   };
@@ -138,8 +264,39 @@ export default function AdminPage() {
         </button>
       </div>
 
-      {/* Admin Actions */}
+      {/* Division Dropdown */}
       <div style={{ marginTop: 30 }}>
+        <label style={{ fontSize: 14 }}>Select Division:</label>
+        <select
+          style={{
+            width: "100%",
+            padding: 12,
+            marginTop: 8,
+            marginBottom: 20,
+            fontSize: 16,
+            borderRadius: 8,
+          }}
+          value={selectedDivision}
+          onChange={(e) => setSelectedDivision(e.target.value)}
+        >
+          <option value="">-- Choose Division --</option>
+          {divisionList.map((d) => (
+            <option key={d} value={d}>
+              {d}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Admin Actions */}
+      <div style={{ marginTop: 10 }}>
+        <button
+          style={{ ...styles.button, backgroundColor: "#28a745" }}
+          onClick={handleRecalculateStandings}
+        >
+          📊 Recalculate Standings
+        </button>
+
         <button
           style={{ ...styles.button, backgroundColor: "#d9534f" }}
           onClick={handleResetTournament}
@@ -155,7 +312,7 @@ export default function AdminPage() {
         </button>
       </div>
 
-      {/* Full-screen overlay */}
+      {/* Reset Overlay */}
       {isResetting && (
         <div style={overlayStyles.backdrop}>
           <div style={overlayStyles.panel}>
@@ -181,6 +338,16 @@ export default function AdminPage() {
             <p style={{ marginTop: 20, fontSize: 12, opacity: 0.7 }}>
               Please keep this page open until the reset completes.
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Recalculate Overlay */}
+      {isRecalculating && (
+        <div style={overlayStyles.backdrop}>
+          <div style={overlayStyles.panel}>
+            <h2>Recalculating Standings…</h2>
+            <p>{recalcStatus}</p>
           </div>
         </div>
       )}
@@ -252,3 +419,4 @@ const overlayStyles = {
     textAlign: "center",
   },
 };
+
