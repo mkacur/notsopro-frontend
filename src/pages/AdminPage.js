@@ -15,10 +15,11 @@ export default function AdminPage() {
   const [gamesProgress, setGamesProgress] = useState({ done: 0, total: 0 });
 
   // Recalculate Standings states
-  const [isRecalculating, setIsRecalculating] = useState(false);
-  const [recalcStatus, setRecalcStatus] = useState("");
   const [divisionList, setDivisionList] = useState([]);
   const [selectedDivision, setSelectedDivision] = useState("");
+  const [isRecalculating, setIsRecalculating] = useState(false);
+  const [recalcStatus, setRecalcStatus] = useState("");
+  const [divisionChecks, setDivisionChecks] = useState([]); // live checkmarks
 
   // Redirect if admin mode is off
   useEffect(() => {
@@ -33,6 +34,7 @@ export default function AdminPage() {
         const data = await res.json();
 
         const divisions = [...new Set(data.value.map(t => t.fields.Division))];
+        divisions.sort(); // stable order
         setDivisionList(divisions);
       } catch (err) {
         console.error("Failed to load divisions:", err);
@@ -91,7 +93,7 @@ export default function AdminPage() {
     return () => clearInterval(interval);
   }, [jobId]);
 
-  // Start reset
+  // Reset Tournament Data
   const handleResetTournament = async () => {
     const sure = window.confirm("Reset ALL tournament data? This cannot be undone.");
     if (!sure) return;
@@ -135,109 +137,137 @@ export default function AdminPage() {
   };
 
   // Recalculate Standings
-  const handleRecalculateStandings = async () => {
+  const handleRunRecalculate = async () => {
     if (!selectedDivision) {
       alert("Please select a division first.");
       return;
     }
 
+    const divisionsToProcess =
+      selectedDivision === "ALL"
+        ? [...divisionList]
+        : [selectedDivision];
+
     const sure = window.confirm(
-      `Recalculate standings for ${selectedDivision}?`
+      selectedDivision === "ALL"
+        ? "Recalculate standings for ALL divisions?"
+        : `Recalculate standings for ${selectedDivision}?`
     );
     if (!sure) return;
 
+    setIsRecalculating(true);
+    setRecalcStatus("Starting…");
+
+    // Initialize checkmark list
+    setDivisionChecks(
+      divisionsToProcess.map(d => ({ name: d, status: "pending" }))
+    );
+
     try {
-      setIsRecalculating(true);
-      setRecalcStatus("Loading teams...");
-
-      // 1. Load teams
-      const teamsRes = await fetch(
-        "https://notsopro-backend.onrender.com/api/teams"
-      );
+      // Load all teams and games once
+      const teamsRes = await fetch("https://notsopro-backend.onrender.com/api/teams");
       const teamsData = await teamsRes.json();
-      const teams = teamsData.value.filter(
-        t => t.fields.Division === selectedDivision
-      );
 
-      const standings = {};
-      teams.forEach(t => {
-        standings[t.fields.TeamName] = {
-          Wins: 0,
-          Losses: 0,
-          For: 0,
-          Ag: 0,
-          Diff: 0,
-          id: t.id
-        };
-      });
-
-      setRecalcStatus("Loading completed games...");
-
-      // 2. Load games
-      const gamesRes = await fetch(
-        "https://notsopro-backend.onrender.com/api/games"
-      );
+      const gamesRes = await fetch("https://notsopro-backend.onrender.com/api/games");
       const gamesData = await gamesRes.json();
-      const completed = gamesData.value.filter(
-        g =>
-          g.fields.Division === selectedDivision &&
-          g.fields.Status === "Final"
-      );
 
-      setRecalcStatus("Recalculating standings...");
+      // Process each division sequentially
+      for (let i = 0; i < divisionsToProcess.length; i++) {
+        const division = divisionsToProcess[i];
 
-      // 3. Loop through games
-      completed.forEach(g => {
-        const A = g.fields.TeamA;
-        const B = g.fields.TeamB;
-        const a = g.fields.ScoreA;
-        const b = g.fields.ScoreB;
+        // Update overlay
+        setRecalcStatus(`Recalculating ${division}…`);
+        setDivisionChecks(prev =>
+          prev.map(d =>
+            d.name === division
+              ? { ...d, status: "processing" }
+              : d
+          )
+        );
 
-        standings[A].For += a;
-        standings[A].Ag += b;
-        if (a > b) standings[A].Wins++;
-        else standings[A].Losses++;
+        // Filter teams
+        const teams = teamsData.value.filter(
+          t => t.fields.Division === division
+        );
 
-        standings[B].For += b;
-        standings[B].Ag += a;
-        if (b > a) standings[B].Wins++;
-        else standings[B].Losses++;
-      });
+        const standings = {};
+        teams.forEach(t => {
+          standings[t.fields.TeamName] = {
+            Wins: 0,
+            Losses: 0,
+            For: 0,
+            Ag: 0,
+            Diff: 0,
+            id: t.id
+          };
+        });
 
-      // 4. Compute Diff
-      Object.values(standings).forEach(s => {
-        s.Diff = s.For - s.Ag;
-      });
+        // Filter completed games
+        const completed = gamesData.value.filter(
+          g =>
+            g.fields.Division === division &&
+            g.fields.Status === "Final"
+        );
 
-      setRecalcStatus("Writing updated standings...");
+        // Recalculate
+        completed.forEach(g => {
+          const A = g.fields.TeamA;
+          const B = g.fields.TeamB;
+          const a = g.fields.ScoreA;
+          const b = g.fields.ScoreB;
 
-      // 5. Write back
-      for (const teamName in standings) {
-        const s = standings[teamName];
+          standings[A].For += a;
+          standings[A].Ag += b;
+          if (a > b) standings[A].Wins++;
+          else standings[A].Losses++;
 
-        await fetch(
-          `https://notsopro-backend.onrender.com/api/teams/${s.id}`,
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              Wins: s.Wins,
-              Losses: s.Losses,
-              For: s.For,
-              Ag: s.Ag,
-              Diff: s.Diff
-            })
-          }
+          standings[B].For += b;
+          standings[B].Ag += a;
+          if (b > a) standings[B].Wins++;
+          else standings[B].Losses++;
+        });
+
+        Object.values(standings).forEach(s => {
+          s.Diff = s.For - s.Ag;
+        });
+
+        // Write back
+        for (const teamName in standings) {
+          const s = standings[teamName];
+
+          await fetch(
+            `https://notsopro-backend.onrender.com/api/teams/${s.id}`,
+            {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                Wins: s.Wins,
+                Losses: s.Losses,
+                For: s.For,
+                Ag: s.Ag,
+                Diff: s.Diff
+              })
+            }
+          );
+        }
+
+        // Mark division as complete
+        setDivisionChecks(prev =>
+          prev.map(d =>
+            d.name === division
+              ? { ...d, status: "done" }
+              : d
+          )
         );
       }
 
-      setRecalcStatus("Standings recalculated successfully!");
-      setTimeout(() => setIsRecalculating(false), 2000);
+      setRecalcStatus("All divisions updated successfully!");
+      setTimeout(() => setIsRecalculating(false), 2500);
 
     } catch (err) {
       console.error(err);
       setRecalcStatus("Error recalculating standings.");
-      setTimeout(() => setIsRecalculating(false), 2000);
+      setTimeout(() => setIsRecalculating(false), 2500);
     }
   };
 
@@ -264,8 +294,10 @@ export default function AdminPage() {
         </button>
       </div>
 
-      {/* Division Dropdown */}
-      <div style={{ marginTop: 30 }}>
+      {/* Recalculate Standings Section */}
+      <div style={{ marginTop: 40 }}>
+        <h2 style={{ marginBottom: 10 }}>Recalculate Standings</h2>
+
         <label style={{ fontSize: 14 }}>Select Division:</label>
         <select
           style={{
@@ -285,17 +317,20 @@ export default function AdminPage() {
               {d}
             </option>
           ))}
+          <option value="ALL">All Divisions</option>
         </select>
-      </div>
 
-      {/* Admin Actions */}
-      <div style={{ marginTop: 10 }}>
         <button
           style={{ ...styles.button, backgroundColor: "#28a745" }}
-          onClick={handleRecalculateStandings}
+          onClick={handleRunRecalculate}
         >
-          📊 Recalculate Standings
+          Run
         </button>
+      </div>
+
+      {/* Tournament Maintenance Section */}
+      <div style={{ marginTop: 50 }}>
+        <h2 style={{ marginBottom: 10 }}>Tournament Maintenance</h2>
 
         <button
           style={{ ...styles.button, backgroundColor: "#d9534f" }}
@@ -348,6 +383,27 @@ export default function AdminPage() {
           <div style={overlayStyles.panel}>
             <h2>Recalculating Standings…</h2>
             <p>{recalcStatus}</p>
+
+            <div style={{ marginTop: 20, textAlign: "left" }}>
+              {divisionChecks.map((d) => (
+                <div
+                  key={d.name}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: 6,
+                    fontSize: 16,
+                  }}
+                >
+                  <span>{d.name}</span>
+                  <span>
+                    {d.status === "pending" && "⏳"}
+                    {d.status === "processing" && "🔄"}
+                    {d.status === "done" && "✓"}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -419,4 +475,3 @@ const overlayStyles = {
     textAlign: "center",
   },
 };
-
